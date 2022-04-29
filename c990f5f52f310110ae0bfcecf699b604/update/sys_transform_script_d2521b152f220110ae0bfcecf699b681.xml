@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_transform_script">
+    <sys_transform_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <map display_value="TransformPlanWeek">b55fc3512f220110ae0bfcecf699b6cc</map>
+        <order>100</order>
+        <script><![CDATA[(function runTransformScript(source, map, log, target /*undefined onStart*/ ) {
+
+	if (source.u_year == "2022"){
+		
+		target.u_year = "2023";
+	}
+	// Add your code here
+
+})(source, map, log, target);]]></script>
+        <sys_class_name>sys_transform_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-03-29 15:01:08</sys_created_on>
+        <sys_id>d2521b152f220110ae0bfcecf699b681</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>onBefore</sys_name>
+        <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+        <sys_update_name>sys_transform_script_d2521b152f220110ae0bfcecf699b681</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-03-29 15:01:08</sys_updated_on>
+        <when>onBefore</when>
+    </sys_transform_script>
+</record_update>

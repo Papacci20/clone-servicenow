@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_773804_vaccino.Discovery_prenotazioni</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>function used in prenotazioni application</description>
+        <name>Discovery_prenotazioni</name>
+        <script><![CDATA[var Discovery_prenotazioni = Class.create();
+Discovery_prenotazioni.prototype = {
+	initialize: function() {
+	},
+
+	getSinglePrenotazioneDetail: function(grPrenotazione) {
+		var singlePrenotazione = {};
+
+		try {
+			singlePrenotazione.sysId=grPrenotazione.sys_id.toString();
+			singlePrenotazione.id=grPrenotazione.u_id_prenotazione.toString();
+			singlePrenotazione.numeroDose=grPrenotazione.u_numero_dose.toString();
+			singlePrenotazione.dataPrenotazione=grPrenotazione.u_data_prenotazione.toString();
+			singlePrenotazione.isPositivo=(grPrenotazione.u_is_positivo.toString() === 'true');    //boolean???
+			singlePrenotazione.parentPrenotation=grPrenotazione.u_parent_prenotation.toString();
+			singlePrenotazione.stato=grPrenotazione.u_stato.toString();
+			singlePrenotazione.tipoVaccinoLabel=grPrenotazione.u_tipo_vaccino.getDisplayValue().toString();
+			singlePrenotazione.tipoVaccino=grPrenotazione.u_tipo_vaccino.toString();
+
+
+			singlePrenotazione.userSysId=grPrenotazione.u_id_user.sys_id.toString(); //sys_user(?)
+			singlePrenotazione.userName=grPrenotazione.u_id_user.user_name.toString();
+			singlePrenotazione.userEmail=grPrenotazione.u_id_user.email.toString();
+
+			singlePrenotazione.dottoreSysId=grPrenotazione.u_id_dottore.sys_id.toString(); //sys_user(?)
+			singlePrenotazione.dottoreName=grPrenotazione.u_id_dottore.user_name.toString();
+			singlePrenotazione.dottoreEmail=grPrenotazione.u_id_dottore.email.toString();
+
+			singlePrenotazione.weekSysId=grPrenotazione.sys_id.toString();
+			singlePrenotazione.idWeek=grPrenotazione.u_id_week.toString();
+			singlePrenotazione.year=grPrenotazione.u_id_week.u_year.toString();
+
+
+		} catch (e) {
+			gs.addErrorMessage('ERRORE GET Single Prenotazione Detail -->' + e);
+		}
+		return singlePrenotazione;
+	},
+
+	engineMyPrenotazioni: function() { //obj, currentPage
+		obj={};
+		currentPage=1;
+		var userSysID = gs.getUserID();
+		var prenotazioneList = [];
+		var recordPerPage = 10;
+		/*  var grOnLogic = new GlideRecord('x_eneld_she_start_she_logic_parameter');
+    grOnLogic.addQuery('u_field', 'record_for_page_action');
+    grOnLogic.setLimit(1);
+    grOnLogic.query();
+    if (grOnLogic.next()) {
+        recordPerPage = grOnLogic.u_logic.toString();
+    } */
+		try {
+			//Parte filtro
+			var queryFilter = '';
+			if(gs.hasRole("x_773804_vaccino.admin")){	
+				gs.addInfoMessage("admin");
+			}
+			else if(gs.hasRole("x_773804_vaccino.dottore")){	
+				queryFilter += 'u_id_dottore='+ userSysID;
+				gs.addInfoMessage("dottore");
+			}
+			else{	
+				gs.addInfoMessage("user normale");
+				queryFilter += 'u_id_user='+ userSysID;
+			}
+			var grPrenotazioni = new GlideRecord('x_773804_vaccino_prenotazione');
+			var grPrenotazioniCount = new GlideRecord('x_773804_vaccino_prenotazione');
+			var objEmpty = new Discovery_prenotazioni().isEmpty(obj);
+			if (!objEmpty) {
+				if (obj.isCurrent) {
+					queryFilter += '^u_id_ecos_2_0.u_statusINassigned,initiated,completed_with_actions_definition';
+				} else if (!obj.isCurrent) {
+					queryFilter += '^u_id_ecos_2_0.u_statusINcompleted_with_actions_verified,not_executable,completed_without_criticalities';
+					//queryFilter = 'u_statusINcompleted_with_actions_verified,not_executable';
+				} //gs.addErrorMessage(obj.scope);
+				queryFilter += '^u_id_ecos_2_0.u_business_line=' + obj.bl;
+				if (obj.hasOwnProperty('country_she')) {
+					if (obj.country_she != '') {
+						queryFilter += '^u_id_ecos_2_0.u_country=' + obj.country_she;
+					}
+				}
+				if (obj.hasOwnProperty('area')) {
+					if (obj.area != '') {
+						queryFilter += '^u_id_ecos_2_0.u_area=' + obj.area;
+					}
+				}
+				if (obj.hasOwnProperty('zoneConcat')) {
+					if (obj.zoneConcat != '') {
+						if(obj.zoneConcat.length > 32){
+							queryFilter += '^u_id_ecos_2_0.u_zoneIN' + obj.zoneConcat;
+						}else{
+							queryFilter += '^u_id_ecos_2_0.u_zone=' + obj.zoneConcat;
+						}
+					}
+				}
+				if (obj.hasOwnProperty('unitaOperativaConcat')) {
+					if (obj.unitaOperativaConcat != '') {
+						if(obj.unitaOperativaConcat.length > 32){
+							queryFilter += '^u_id_ecos_2_0.u_uoIN'+ obj.unitaOperativaConcat;
+						}else{
+							queryFilter += '^u_id_ecos_2_0.u_uo='+ obj.unitaOperativaConcat;
+						}
+					}
+				}
+				if (obj.hasOwnProperty('statusConcat')) {
+					if (obj.statusConcat != '') {
+						if (obj.statusConcat.indexOf(',') > 0) {
+							queryFilter += '^u_id_ecos_2_0.u_statusIN' + obj.statusConcat;
+						}else{
+							queryFilter += '^u_id_ecos_2_0.u_status=' + obj.statusConcat;
+						}
+					}
+				}
+				if (obj.hasOwnProperty('idEcos')) {
+					if (obj.idEcos != '') {
+						queryFilter += '^u_id_ecos_2_0.u_id_ecos_2_0LIKE' + obj.idEcos;
+					}
+				}
+				if (obj.dateFrom != '' || obj.dateTo != '') {
+					if (obj.dateFrom != '' && obj.dateTo != '') {
+						obj.dateTo = new GlideDateTime(obj.dateTo);
+						obj.dateTo.addDaysUTC(1);
+						obj.dateFrom = new GlideDateTime(obj.dateFrom);
+						queryFilter += "^u_id_ecos_2_0.u_expected_start_date>=javascript:gs.dateGenerate('" + obj.dateFrom + "','end')^u_id_ecos_2_0.u_expected_start_date<=javascript:gs.dateGenerate('" + obj.dateTo + "','start')";
+					} else if (obj.dateFrom != '' && obj.dateTo == '') {
+						obj.dateFrom = new GlideDateTime(obj.dateFrom);
+						queryFilter += "^u_id_ecos_2_0.u_expected_start_date>=javascript:gs.dateGenerate('" + obj.dateFrom + "','end')";
+					} else if (obj.dateFrom == '' && obj.dateTo != '') {
+						obj.dateTo = new GlideDateTime(obj.dateTo);
+						obj.dateTo.addDaysUTC(1);
+						queryFilter += "^u_id_ecos_2_0.u_expected_start_date<=javascript:gs.dateGenerate('" + obj.dateTo + "','start')";
+					}
+				}
+			}
+			grPrenotazioni.addEncodedQuery(queryFilter);
+			grPrenotazioniCount.addEncodedQuery(queryFilter);
+			gs.addErrorMessage(queryFilter);
+			grPrenotazioni.orderByDesc('u_data_prenotazione');
+			if (currentPage == 1) {
+				grPrenotazioni.chooseWindow(0, recordPerPage);
+				var startNumber = 0;
+			} else {
+				var startNumber = (parseInt(currentPage) - 1) * parseInt(recordPerPage);
+				//gs.addErrorMessage('START   ' + parseInt(startNumber-1));
+				//gs.addErrorMessage('END   ' + startNumber + recordPerPage);
+				grPrenotazioni.chooseWindow(startNumber, startNumber + parseInt(recordPerPage));
+			}
+			grPrenotazioni.query();
+			grPrenotazioniCount.query();
+			var countRow = grPrenotazioniCount.getRowCount();
+			var numRow = grPrenotazioni.getRowCount();
+			var numPage = parseInt(numRow) / parseInt(recordPerPage);
+			if(numPage > parseInt(numPage)){
+				//Caso 0,0000000000000,1 non gestito
+				numPage++;
+			}
+			numPage = parseInt(numPage);
+			while (grPrenotazioni.next()) {
+				//prenotazioneObj = {};
+				var prenotazioneObj = {};
+				prenotazioneObj = new Discovery_prenotazioni().getSinglePrenotazioneDetail(grPrenotazioni);
+				prenotazioneList.push(prenotazioneObj);
+			}
+		} catch (e) {
+			gs.addErrorMessage('ERRORE engine My Ecos -->' + JSON.stringify(e));
+		}
+		var response = {};
+		response.prenotazioneList = prenotazioneList;
+		response.numPage = numPage;
+		response.countRow = countRow;
+		return response;
+	},
+
+	retriveVacciniType : function () {
+		try{ 
+			var tipiVacciniList =[]; 
+			var grVacciniType = new GlideRecord('sys_choice');
+			grVacciniType.addQuery('element','u_tipo_vaccino'); // Nome campo 
+			grVacciniType.addQuery('name','x_773804_vaccino_vaccini_choice_parameter'); // nome tabella delle choice
+			grVacciniType.addQuery('inactive', false);
+			grVacciniType.orderBy('label');		
+			grVacciniType.query();
+			while(grVacciniType.next()){
+				tipiVacciniList.push({
+					label: grVacciniType.label.toString(),
+					value: grVacciniType.value.toString()
+				});
+			}
+		}catch(e){
+			gs.addErrorMessage('Errore retrive tipi vaccini ' + JSON.stringify(e));
+		}
+		return tipiVacciniList;
+	},
+
+	/// VALIDATOR
+	retriveDottori : function () { //POPOLAMENTO  Action Validator
+		try{
+
+			var ValidatorJson= [];
+			var sys_userValidator = "";
+			var userIDValidator = "";
+			var userFullNameValidator = "";
+			//var user_department_validator = "";
+			var grValidator = new GlideRecord('sys_user_grmember');
+			grValidator.addQuery('user.active',true);
+			grValidator.addEncodedQuery('group.name=PRENOTAZIONI_Dottori');
+			grValidator.setLimit(10);
+			grValidator.query();
+			while(grValidator.next()){
+				sys_userValidator = grValidator.user.sys_id.toString();
+				userIDValidator= grValidator.user.user_name.toString();
+				userFullNameValidator = grValidator.user.name.toString();
+				//user_department_validator = grValidator.user.department.u_gbl_sub_area.name.toString();
+				ValidatorJson.push({
+					sys_id : sys_userValidator,
+					userID : userIDValidator,
+					fullName : userFullNameValidator,
+					//	user_department : user_department_validator,
+					is_checked : false
+				});
+			}
+		}catch(e){
+			gs.info(e);
+		}
+		//gs.info(JSON.stringify(ValidatorJson));
+		return ValidatorJson;
+
+	},
+
+
+
+	//funzione per inserimento nuova prenotazione
+
+	insertNewPrenotazione : function (inputInsert, dateInsert){
+
+		var response = false;
+		var currentUserID = gs.getUserID();
+
+		try {
+
+			//Create a new Incident record and populate the fields with the values below
+			var gr = new GlideRecord('x_773804_vaccino_prenotazione');
+			gr.initialize();
+
+			gr.u_data_prenotazione = dateInsert;
+			gr.u_id_dottore = inputInsert.dottore;
+			gr.u_numero_dose = inputInsert.numDose;
+			gr.u_tipo_vaccino = inputInsert.type;
+			gr.u_id_user = currentUserID;
+			gr.u_stato = "u_draft";
+			gr.u_id_week = new Discovery_prenotazioni().getPlanWeek(dateInsert);
+
+			if (gr.u_numero_dose > 1){
+
+				var grLastPrenotazioni = new GlideRecord('x_773804_vaccino_prenotazione');
+
+				grLastPrenotazioni.addQuery('u_stato', '!=', 'u_cancelled');
+				grLastPrenotazioni.addQuery('u_id_user', currentUserID);
+				grLastPrenotazioni.orderByDesc('u_data_prenotazione');
+				grLastPrenotazioni.setLimit(1);
+
+				grLastPrenotazioni.query();
+
+				if(grLastPrenotazioni.next()){
+
+					gr.u_parent_prenotation = grLastPrenotazioni.sys_id;
+
+				}
+
+			}
+
+			if (gr.insert()){
+
+				response = true;
+
+			}
+
+		}
+
+		catch(e){
+
+			gs.addErrorMessage(JSON.stringify(e));
+
+		}
+		//gs.addErrorMessage('cicciogamer1989');
+		return response;
+
+	},
+
+	totaleUserPrenotazioni: function(){
+
+		try {
+
+			var sysIdUser = gs.getUserID();
+			var numPrenotazioni = 0;
+			var grTotaleUserPrenotazioni = new GlideRecord('x_773804_vaccino_prenotazione');
+
+			grTotaleUserPrenotazioni.addQuery('u_id_user', sysIdUser);
+			grTotaleUserPrenotazioni.addQuery('u_stato','!=','u_cancelled');
+			grTotaleUserPrenotazioni.orderByDesc('u_data_prenotazione');
+			grTotaleUserPrenotazioni.query();
+
+			while (grTotaleUserPrenotazioni.next()){
+
+				numPrenotazioni++;
+				gs.info(grTotaleUserPrenotazioni.sys_id);
+
+			}
+
+		}
+
+		catch (e) {
+			gs.info(e);
+		}
+
+		return numPrenotazioni+1;
+
+	},
+
+	getPlanWeek: function(date){
+
+		try{
+
+			var dataOutput = "";
+
+			var dataInput = new GlideDateTime(date);   //formato yyyy-MM-dd HH:mm:ss (data corrente se vuoto)
+			var grGetPlanWeek = new GlideRecord('x_773804_vaccino_plan_week');
+			var queryFilter = "u_start_date<=javascript:gs.dateGenerate('" + dataInput + "','start')^u_end_date>=javascript:gs.dateGenerate('" + dataInput + "','end')";
+
+			grGetPlanWeek.addEncodedQuery(queryFilter);
+
+			grGetPlanWeek.orderBy('u_end_date');
+			grGetPlanWeek.query();
+
+			while(grGetPlanWeek.next()){
+
+				dataOutput = grGetPlanWeek.sys_id.toString();
+
+			}
+
+		}
+
+		catch (e){
+
+			gs.info(e);
+
+		}
+
+		return dataOutput;
+
+	},
+
+	logicaVaccino: function(totalePrenotazioni) {
+
+		try {
+
+			//totalePrenotazioni = 3;
+			var returnObj = {};
+			returnObj.dataPrenotazione = "";
+			returnObj.tipoVaccino = "";
+
+			var currentUserID = gs.getUserID();
+			var grLastPrenotazioni = new GlideRecord('x_773804_vaccino_prenotazione');
+
+			grLastPrenotazioni.addQuery('u_stato', '!=', 'u_cancelled');
+			grLastPrenotazioni.addQuery('u_id_user', currentUserID);
+			grLastPrenotazioni.addQuery('u_numero_dose', totalePrenotazioni-1);
+			grLastPrenotazioni.setLimit(1);
+
+			grLastPrenotazioni.query();
+
+			if(grLastPrenotazioni.next()){
+
+				gs.addInfoMessage("sono dentro");
+
+				var grLogicTable = new GlideRecord('x_773804_vaccino_prenotazioni_logic_parameter');
+				grLogicTable.addQuery('vaccino_choice_logic', grLastPrenotazioni.u_tipo_vaccino);
+				grLogicTable.addQuery('numerodose', parseInt(grLastPrenotazioni.u_numero_dose)+1);
+				grLogicTable.setLimit(1);
+
+				grLogicTable.query();
+
+				gs.addInfoMessage(grLogicTable.getEncodedQuery());
+				returnObj.tipoVaccino = grLastPrenotazioni.u_tipo_vaccino.toString();
+
+				if(grLogicTable.next()){
+
+					gs.addErrorMessage("sono dentro al dentro");
+					var grNuovaData = new GlideDateTime(grLastPrenotazioni.u_data_prenotazione);
+					var dayToAdd = parseInt(grLogicTable.numerogiorni.toString()+1).toString();
+					grNuovaData.addDaysUTC(dayToAdd);
+
+					returnObj.dataPrenotazione = grNuovaData;
+
+				}
+
+			}
+
+			//grLastPrenotazioni.u_data_prenotazione.addDaysUTC(grLogicTable.numero_giorni);
+
+		} catch (e) {
+			gs.addErrorMessage(e);
+		}
+
+		return returnObj;
+
+	},
+
+	isEmpty : function (obj) {
+		for(var prop in obj) {
+			if(obj.hasOwnProperty(prop)) {
+				return false;
+			}
+		}
+		return JSON.stringify(obj) === JSON.stringify({});
+	},
+	type: 'Discovery_prenotazioni'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-03-03 14:50:04</sys_created_on>
+        <sys_id>7e38d9852fc20110ae0bfcecf699b6bc</sys_id>
+        <sys_mod_count>54</sys_mod_count>
+        <sys_name>Discovery_prenotazioni</sys_name>
+        <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+        <sys_update_name>sys_script_include_7e38d9852fc20110ae0bfcecf699b6bc</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-03-16 14:27:07</sys_updated_on>
+    </sys_script_include>
+</record_update>

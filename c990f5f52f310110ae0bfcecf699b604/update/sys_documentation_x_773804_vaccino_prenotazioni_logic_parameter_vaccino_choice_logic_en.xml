@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="vaccino_choice_logic" label="Vaccino_Choice_Logic" language="en" table="x_773804_vaccino_prenotazioni_logic_parameter">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>vaccino_choice_logic</element>
+            <help/>
+            <hint/>
+            <label>Vaccino_Choice_Logic</label>
+            <language>en</language>
+            <name>x_773804_vaccino_prenotazioni_logic_parameter</name>
+            <plural>Vaccino_Choice_Logics</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2022-03-08 13:06:33</sys_created_on>
+            <sys_id>28f076e62fc20110ae0bfcecf699b6bb</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Vaccino_Choice_Logic</sys_name>
+            <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+            <sys_update_name>sys_documentation_x_773804_vaccino_prenotazioni_logic_parameter_vaccino_choice_logic_en</sys_update_name>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2022-03-08 13:06:33</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

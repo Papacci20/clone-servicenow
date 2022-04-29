@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {
+	/* widget controller */
+	var c = this;
+
+	var today = new Date();
+	c.today = today.getTime();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1;
+	var yyyy = today.getFullYear();
+	if(dd<10){
+		dd='0'+ dd;
+	}
+	if(mm<10){
+		mm='0'+ mm;
+	}
+	c.min = yyyy+'-'+mm+'-'+dd;
+	c.disableNewTipoVaccino = false;
+	c.openModalInsert = function(){
+		c.clearObjInsert();
+		var action = "totale_user_prenotazioni";
+		c.server.get({action:action}).then(function (response){
+			var totalePrenotazioni = response.data.totaleUserPrenotazioni;
+			c.objInsertPrenotazione.numDose = totalePrenotazioni;
+			if(totalePrenotazioni > 1){
+
+				c.disableNewTipoVaccino = true;
+				var action2 = "logica_vaccino";
+				c.server.get({action:action2, totale:totalePrenotazioni}).then(function (response2){
+					console.log (response2.data.responseObj);
+					c.objInsertPrenotazione.type = response2.data.responseObj.tipoVaccino;
+					c.objInsertPrenotazione.dataPrenotazione = response2.data.responseObj.dataPrenotazione;
+				});
+
+			}
+
+		});
+		$('#newPrenotazione').modal('show');
+	};
+	
+	c.checkPrenotazioniInWeek = function(dataPrenotazione){
+		var dataObj = {};
+		dataObj.day = insertObj.dataPrenotazione.getDate();
+		dataObj.month = insertObj.dataPrenotazione.getMonth()+1;
+		dataObj.year = insertObj.dataPrenotazione.getFullYear();
+		var action = 'insert_new_prenotazione';
+	};
+
+	c.clearObjInsert = function(){
+		c.objInsertPrenotazione = {};
+		c.objInsertPrenotazione.type = '';
+		c.objInsertPrenotazione.numDose = '';
+		c.objInsertPrenotazione.dottore = '';
+		c.objInsertPrenotazione.dataPrenotazione = new Date();
+		c.disableNewTipoVaccino = false;
+	};
+
+
+	//Qui carico le prenotazioni
+
+	c.insertPrenotazione = function(insertObj){
+		var dataObj = {};
+		dataObj.day = insertObj.dataPrenotazione.getDate();
+		dataObj.month = insertObj.dataPrenotazione.getMonth()+1;
+		dataObj.year = insertObj.dataPrenotazione.getFullYear();
+		var action = 'insert_new_prenotazione';
+		c.server.get({action:action,obj:insertObj,date:dataObj}).then(function (response){
+			if(response.data.insertnewprenotazione)
+			{
+				$('#newPrenotazione').modal('hide');
+				c.reloadPrenotazioni();
+			}
+			else
+			{
+				console.error("Errore durante l'insert");
+			}
+		});
+	};
+
+	c.select2 = function () {
+		setTimeout(function(){
+			$('.my-select2').select2('destroy');
+			$('.my-select2').select2();
+		},0);
+	};
+
+	c.reloadPrenotazioni = function (){
+		var action = 'reload_prenotazione';
+		c.data.prenotazionelist = [];
+		c.server.get({action:action}).then(function (response){
+			c.data.prenotazionelist = response.data.responseobj.prenotazioneList;
+			console.log(c.data.prenotazionelist);
+		});
+	};
+
+	$(document).ready(function() {
+		c.select2();
+		c.reloadPrenotazioni();
+	});
+
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>myprenotazionewidget</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {
+  
+}]]></link>
+        <name>MyPrenotazioneWidget</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	try{
+		if (input){
+			
+			if (input.action == "pre_vac"){
+				data.urlredirect = gs.getProperty('glide.servlet.uri')+"pre_vac?id=my_pre_vac";
+			}
+			else if (input.action == "reload_prenotazione") {
+				data.responseobj = new Discovery_prenotazioni().engineMyPrenotazioni();
+
+			}
+			else if (input.action == "insert_new_prenotazione"){
+
+				var dateInsert = new GlideDateTime(input.date.year + "-"+input.date.month+"-"+input.date.day);
+				data.insertnewprenotazione = new Discovery_prenotazioni().insertNewPrenotazione(input.obj, dateInsert);
+
+			}
+			else if (input.action == "totale_user_prenotazioni"){
+
+				data.totaleUserPrenotazioni = new Discovery_prenotazioni().totaleUserPrenotazioni();
+			
+			}
+			else if (input.action == "logica_vaccino"){
+
+				data.responseObj = new Discovery_prenotazioni().logicaVaccino(input.totale);
+
+			}
+			else if (input.action == "get_plan_week"){
+
+				data.responseObj = new Discovery_prenotazioni().logicaVaccino(input.totale);
+
+			}
+			
+		} 
+		
+		else{
+				data.tipiVaccini = new Discovery_prenotazioni().retriveVacciniType();
+				data.dottori = new Discovery_prenotazioni().retriveDottori();
+			}
+
+	}
+	catch(e){
+		gs.addErrorMessage(JSON.stringify(e));
+	}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-03-01 09:45:13</sys_created_on>
+        <sys_id>019fb5d02f420110ae0bfcecf699b67c</sys_id>
+        <sys_mod_count>48</sys_mod_count>
+        <sys_name>MyPrenotazioneWidget</sys_name>
+        <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+        <sys_update_name>sp_widget_019fb5d02f420110ae0bfcecf699b67c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-03-16 17:14:34</sys_updated_on>
+        <template><![CDATA[<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" ng-click='c.openModalInsert()'>
+  Insert Prenotazione
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="newPrenotazione" tabindex="-1" role="dialog" aria-labelledby="newPrenotazioneLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newPrenotazioneLabel">Insert new Prenotazione</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class ='row'>
+          <div class = 'col-md-10'> 
+            <div class="custom-select2 ">
+              <div class="inside-select">
+                <label class="label-select" for="tipoVaccinoInsert">Tipo Vaccino *</label>
+                <select class="my-select2" id="tipoVaccinoInsert" name="tipoVaccinoInsert" ng-model="c.objInsertPrenotazione.type" ng-disabled="c.disableNewTipoVaccino">
+                  <option value="" data-id="NULL">None</option>
+                  <option ng-repeat="vaccinoType in c.data.tipiVaccini" value="{{vaccinoType.value}}">{{vaccinoType.label}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class = 'col-md-2'> 
+            <div class="bck-input form-group">
+              <label for="numDoseInsert" class="bck-input__label  ">Num Dose</label>
+              <input type="text" class="bck-input__input " id="numDoseInsert" value="0" ng-model="c.objInsertPrenotazione.numDose" disabled >
+            </div>
+          </div>
+        </div>
+        <div class ='row'>
+          <div class = 'col-md-8'> 
+            <div class="custom-select2 ">
+              <div class="inside-select">
+                <label class="label-select" for="nomeDottoreinsert">Nome Dottore *</label>
+                <select class="my-select2" id="nomeDottoreinsert" name="nomeDottoreinsert" ng-model="c.objInsertPrenotazione.dottore">
+                  <option value="" data-id="NULL">None</option>
+                  <option ng-repeat="dottore in c.data.dottori" value="{{dottore.sys_id}}">{{dottore.fullName}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class = 'col-md-4'> 
+            <div class="bck-datepicker">
+              <label class="bck-datepicker__label"
+                     for="dataInsert">Data Prenotazione *</label>
+              <div class="bck-datepicker__container l-flex-between">
+                <input type="date" id="dataInsert"
+                       class="bck-datepicker__input ng-pristine ng-untouched ng-valid ng-empty"
+                       datepicker="" ng-model="c.objInsertPrenotazione.dataPrenotazione" min={{c.min}}
+                       dp-format="dd-mm-yyyy" placeholder="dd/mm/yyyy" role="textbox"
+                       aria-invalid="false" onkeydown="return false"
+                       ng-change="c.checkPrenotazioniInWeek(c.objInsertPrenotazione.dataPrenotazione)">
+                <!-- <span class="bck-datepicker__icon icon-enel-calendar"></span> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class ='row'>
+        <div class = 'col-md-6'> </div>
+        <div class = 'col-md-6'> </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary" ng-click='c.insertPrenotazione(c.objInsertPrenotazione)' ng-disabled="c.objInsertPrenotazione.type == '' ||  c.objInsertPrenotazione.dottore == '' ||  c.objInsertPrenotazione.dataPrenotazione == '' " >Insert Prenotazione </button>
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Prenotazione" max_length="40" name="x_773804_vaccino_prenotazione" sizeclass="0" type="collection">
+        <element label="Data Prenotazione" max_length="40" name="u_data_prenotazione" type="glide_date_time"/>
+        <element label="Id Dottore" max_length="32" name="u_id_dottore" reference="sys_user" type="reference"/>
+        <element default="javascript:global.getNextObjNumberPadded();" display="true" label="ID Prenotazione" max_length="64" name="u_id_prenotazione" read_only="true" type="string"/>
+        <element label="Id User" max_length="32" name="u_id_user" reference="sys_user" type="reference"/>
+        <element label="Id Week" max_length="32" name="u_id_week" reference="x_773804_vaccino_plan_week" type="reference"/>
+        <element label="Is Positivo" max_length="40" name="u_is_positivo" type="boolean"/>
+        <element label="Numero Dose" max_length="40" name="u_numero_dose" type="integer"/>
+        <element label="Parent Prenotation" max_length="32" name="u_parent_prenotation" reference="x_773804_vaccino_prenotazione" type="reference"/>
+        <element choice="1" label="Stato" max_length="40" name="u_stato" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Cancelled" value="u_cancelled"/>
+                <element inactive_on_update="false" label="Done" value="u_done"/>
+                <element inactive_on_update="false" label="Draft" value="u_draft"/>
+            </choice>
+        </element>
+        <element choice="1" choice_field="u_tipo_vaccino" choice_table="x_773804_vaccino_vaccini_choice_parameter" label="Tipo Vaccino" max_length="40" name="u_tipo_vaccino" type="choice">
+            <choice/>
+        </element>
+        <index name="index">
+            <element name="u_id_week"/>
+        </index>
+        <index name="index2">
+            <element name="u_id_dottore"/>
+        </index>
+        <index name="index3">
+            <element name="u_id_user"/>
+        </index>
+        <index name="index4">
+            <element name="u_parent_prenotation"/>
+        </index>
+    </element>
+</database>

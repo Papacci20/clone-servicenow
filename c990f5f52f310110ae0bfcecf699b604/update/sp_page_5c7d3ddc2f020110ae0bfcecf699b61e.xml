@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_page">
+    <sp_page action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <css/>
+        <draft>false</draft>
+        <dynamic_title_structure/>
+        <id>my_pre_vac</id>
+        <internal>false</internal>
+        <omit_watcher>false</omit_watcher>
+        <public>true</public>
+        <roles/>
+        <seo_script/>
+        <short_description>pagina per la prenotazione che cambia visualizzazione in base al ruolo dell'utente</short_description>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-03-01 09:37:10</sys_created_on>
+        <sys_id>5c7d3ddc2f020110ae0bfcecf699b61e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>my_pre_vac</sys_name>
+        <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+        <sys_update_name>sp_page_5c7d3ddc2f020110ae0bfcecf699b61e</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-03-01 09:37:10</sys_updated_on>
+        <title>MyPrenotazione</title>
+        <use_seo_script>false</use_seo_script>
+    </sp_page>
+    <sys_translated_text action="delete_multiple" query="documentkey=5c7d3ddc2f020110ae0bfcecf699b61e"/>
+</record_update>

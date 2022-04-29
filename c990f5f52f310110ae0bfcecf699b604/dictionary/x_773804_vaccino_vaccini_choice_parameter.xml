@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Vaccini_Choice_Parameter" max_length="40" name="x_773804_vaccino_vaccini_choice_parameter" sizeclass="0" type="collection">
+        <element choice="1" label="Tipo_Vaccino" max_length="40" name="u_tipo_vaccino" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Astrazeneca" value="astrazeneca"/>
+                <element inactive_on_update="false" label="Johnson &amp; Johnson" value="johnsonandjohnson"/>
+                <element inactive_on_update="false" label="Moderna" value="moderna"/>
+                <element inactive_on_update="false" label="Pfizer" value="pfizer"/>
+            </choice>
+        </element>
+    </element>
+</database>

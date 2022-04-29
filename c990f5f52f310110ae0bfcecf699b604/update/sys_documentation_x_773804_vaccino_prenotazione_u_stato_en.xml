@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update>
+    <sys_documentation element="u_stato" label="Stato" language="en" table="x_773804_vaccino_prenotazione">
+        <sys_documentation action="INSERT_OR_UPDATE">
+            <element>u_stato</element>
+            <help/>
+            <hint/>
+            <label>Stato</label>
+            <language>en</language>
+            <name>x_773804_vaccino_prenotazione</name>
+            <plural>Statos</plural>
+            <sys_class_name>sys_documentation</sys_class_name>
+            <sys_created_by>admin</sys_created_by>
+            <sys_created_on>2022-02-21 14:59:31</sys_created_on>
+            <sys_id>9dfaf5752f710110ae0bfcecf699b661</sys_id>
+            <sys_mod_count>0</sys_mod_count>
+            <sys_name>Stato</sys_name>
+            <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+            <sys_policy/>
+            <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+            <sys_update_name>sys_documentation_x_773804_vaccino_prenotazione_u_stato_en</sys_update_name>
+            <sys_updated_by>admin</sys_updated_by>
+            <sys_updated_on>2022-02-21 14:59:31</sys_updated_on>
+            <url/>
+            <url_target/>
+        </sys_documentation>
+    </sys_documentation>
+</record_update>

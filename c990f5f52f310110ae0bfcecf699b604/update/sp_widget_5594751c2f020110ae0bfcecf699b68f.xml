@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {
+	/* widget controller */
+	var c = this;
+	c.redirectPreVac=function(){
+		var action = "pre_vac";
+		c.server.get({action:action}).then(function (response){
+			console.log(response.data.urlredirect);
+			window.open(response.data.urlredirect,'_blank');
+		});
+	};
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css/>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description>primo test di widget</description>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>primowidget</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {
+  
+}]]></link>
+        <name>Primo_Widget</name>
+        <option_schema/>
+        <public>true</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+try{
+	if (input){
+		if (input.action == "pre_vac"){
+			data.urlredirect = gs.getProperty('glide.servlet.uri')+"pre_vac?id=my_pre_vac";
+		}
+	}else{
+		gs.addInfoMessage("finito il server");
+	}
+}
+catch(e){
+	gs.addErrorMessage(JSON.stringify(e));
+}
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-03-01 09:00:27</sys_created_on>
+        <sys_id>5594751c2f020110ae0bfcecf699b68f</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>Primo_Widget</sys_name>
+        <sys_package display_value="Prenotazione Vaccino" source="x_773804_vaccino">c990f5f52f310110ae0bfcecf699b604</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Prenotazione Vaccino">c990f5f52f310110ae0bfcecf699b604</sys_scope>
+        <sys_update_name>sp_widget_5594751c2f020110ae0bfcecf699b68f</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-03-01 09:42:54</sys_updated_on>
+        <template><![CDATA[<div>
+<!-- your widget template -->
+  <h1> Hello World </h1>
+  <div class="row"> 
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary" ng-click="c.redirectPreVac()"> Clicca qui per prenotare </button>
+    </div>
+    <div class="col-md-4">
+    </div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>
